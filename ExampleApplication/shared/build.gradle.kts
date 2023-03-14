@@ -24,8 +24,19 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
+
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
+                val cameraxVersion = "1.2.1";
+                implementation("androidx.camera:camera-core:${cameraxVersion}")
+                implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+                implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+                implementation("androidx.camera:camera-video:${cameraxVersion}")
+
+                implementation("androidx.camera:camera-view:${cameraxVersion}")
+                implementation( "androidx.camera:camera-extensions:${cameraxVersion}")
+
             }
         }
         val commonTest by getting {
@@ -61,6 +72,9 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 33
-        targetSdk = 33
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
