@@ -12,6 +12,9 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     buildFeatures {
         compose = true
@@ -47,4 +50,18 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.3.1")
     implementation("androidx.compose.material:material:1.3.1")
     implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
+
+    //cameraX
+    val cameraxVersion = "1.2.1";
+    implementation("androidx.camera:camera-core:${cameraxVersion}")
+    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+    implementation("androidx.camera:camera-video:${cameraxVersion}")
+
+    implementation("androidx.camera:camera-view:${cameraxVersion}")
+    implementation( "androidx.camera:camera-extensions:${cameraxVersion}")
+
+    //icons
+    implementation("androidx.compose.material:material-icons-extended:1.3.1")
 }

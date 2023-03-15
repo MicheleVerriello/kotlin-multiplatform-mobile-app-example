@@ -2,6 +2,7 @@ package com.example.exampleapplication.android
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -10,46 +11,56 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.Image
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.io.File
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
+
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var viewBinding: ActivityMainBinding
-
-    private var imageCapture: ImageCapture? = null
-
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
-
+    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
+    private var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
+
+    private lateinit var photoUri: Uri
+    private var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            Log.i("CAMERA PERMISSION", "Permission Granted")
+            Log.i("PERMISSIONS", "Permission granted")
+            shouldShowCamera.value = true
         } else {
-            Log.i("CAMERA PERMISSION", "Permission denied")
+            Log.i("PERMISSIONS", "Permission denied")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    MainView()
-                }
+            if (shouldShowCamera.value) {
+                CameraView(
+                    outputDirectory = outputDirectory,
+                    executor = cameraExecutor,
+                    onImageCaptured = ::handleImageCapture,
+                    onError = { Log.e("kilo", "View error:", it) }
+                )
             }
         }
 
         requestCameraPermission()
+
+        outputDirectory = getOutputDirectory()
+        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     private fun requestCameraPermission() {
@@ -78,11 +89,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
+
+    private fun handleImageCapture(uri: Uri) {
+        Log.i("kilo", "Image captured: $uri")
+        shouldShowCamera.value = false
+
+        photoUri = uri
+        shouldShowPhoto.value = true
+    }
+
+    private fun getOutputDirectory(): File {
+        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+            File(it, resources.getString(R.string.app_title)).apply { mkdirs() }
+        }
+
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
-
 }
 
 @Composable
