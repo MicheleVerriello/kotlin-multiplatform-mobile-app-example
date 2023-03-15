@@ -8,13 +8,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.Image
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
@@ -39,6 +35,7 @@ class MainActivity : ComponentActivity() {
         if (isGranted) {
             Log.i("PERMISSIONS", "Permission granted")
             shouldShowCamera.value = true
+            Log.i("PERMISSIONS", "shouldShowCamera.value ${shouldShowCamera.value}")
         } else {
             Log.i("PERMISSIONS", "Permission denied")
         }
@@ -46,18 +43,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //requestCameraPermission()
+
         setContent {
-            if (shouldShowCamera.value) {
+            //if (shouldShowCamera.value) {
                 CameraView(
                     outputDirectory = outputDirectory,
                     executor = cameraExecutor,
                     onImageCaptured = ::handleImageCapture,
                     onError = { Log.e("kilo", "View error:", it) }
                 )
-            }
+           // }
         }
-
-        requestCameraPermission()
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -113,7 +110,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun MainView() {
-
-}
+//@Composable
+//fun MainView() {
+//    CameraView(
+//        outputDirectory = null,
+//        executor = cameraExecutor,
+//        onImageCaptured = ::handleImageCapture,
+//        onError = { Log.e("kilo", "View error:", it) }
+//    )
+//}

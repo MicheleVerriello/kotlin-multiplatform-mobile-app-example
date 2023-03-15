@@ -53,7 +53,6 @@ fun CameraView(
     val previewView = remember { PreviewView(context) }
     val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
     val cameraSelector = CameraSelector.Builder()
-        .requireLensFacing(lensFacing)
         .build()
 
     // 2
