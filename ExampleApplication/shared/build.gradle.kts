@@ -1,3 +1,5 @@
+import org.apache.tools.ant.util.JavaEnvUtils.VERSION_1_8
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -27,7 +29,16 @@ kotlin {
 
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                //cameraX
                 val cameraxVersion = "1.2.1";
                 implementation("androidx.camera:camera-core:${cameraxVersion}")
                 implementation("androidx.camera:camera-camera2:${cameraxVersion}")
@@ -37,14 +48,10 @@ kotlin {
                 implementation("androidx.camera:camera-view:${cameraxVersion}")
                 implementation( "androidx.camera:camera-extensions:${cameraxVersion}")
 
+                //icons
+                implementation("androidx.compose.material:material-icons-extended:1.3.1")
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-        val androidMain by getting
         val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -70,6 +77,7 @@ kotlin {
 android {
     namespace = "com.example.exampleapplication"
     compileSdk = 33
+
     defaultConfig {
         minSdk = 33
     }
