@@ -45,7 +45,7 @@ fun CameraView(
     onError: (ImageCaptureException) -> Unit
 ) {
     // 1
-    val lensFacing = CameraSelector.LENS_FACING_BACK
+    val lensFacing = CameraSelector.DEFAULT_FRONT_CAMERA
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 

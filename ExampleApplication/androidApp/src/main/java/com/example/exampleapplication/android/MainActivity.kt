@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //requestCameraPermission()
+        requestCameraPermission()
 
         setContent {
             //if (shouldShowCamera.value) {
@@ -109,13 +109,3 @@ class MainActivity : ComponentActivity() {
         cameraExecutor.shutdown()
     }
 }
-
-//@Composable
-//fun MainView() {
-//    CameraView(
-//        outputDirectory = null,
-//        executor = cameraExecutor,
-//        onImageCaptured = ::handleImageCapture,
-//        onError = { Log.e("kilo", "View error:", it) }
-//    )
-//}
