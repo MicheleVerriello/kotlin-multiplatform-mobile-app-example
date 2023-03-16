@@ -78,7 +78,6 @@ fun CameraView(
         IconButton(
             modifier = Modifier.padding(bottom = 20.dp),
             onClick = {
-                Log.i("kilo", "ON CLICK")
                 takePhoto(
                     filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
                     imageCapture = imageCapture,
@@ -121,7 +120,6 @@ private fun takePhoto(
 
     imageCapture.takePicture(outputOptions, executor, object: ImageCapture.OnImageSavedCallback {
         override fun onError(exception: ImageCaptureException) {
-            Log.e("kilo", "Take photo error:", exception)
             onError(exception)
         }
 

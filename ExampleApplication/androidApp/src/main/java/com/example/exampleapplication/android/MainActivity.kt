@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
@@ -33,9 +32,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            Log.i("PERMISSIONS", "Permission granted")
             shouldShowCamera.value = true
-            Log.i("PERMISSIONS", "shouldShowCamera.value ${shouldShowCamera.value}")
         } else {
             Log.i("PERMISSIONS", "Permission denied")
         }
@@ -43,18 +40,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestCameraPermission()
 
         setContent {
-            //if (shouldShowCamera.value) {
+            if (shouldShowCamera.value) {
                 CameraView(
                     outputDirectory = outputDirectory,
                     executor = cameraExecutor,
                     onImageCaptured = ::handleImageCapture,
-                    onError = { Log.e("kilo", "View error:", it) }
+                    onError = { Log.e("CAMERA VIEW", "View error:", it) }
                 )
-           // }
+            }
         }
+
+        requestCameraPermission()
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -67,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
                 // You can use the API that requires the permission.
-                Log.i("CAMERA PERMISSION", "Permission previously granted")
+                shouldShowCamera.value = true
             }
             ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) -> {
             // In an educational UI, explain to the user why your app requires this
