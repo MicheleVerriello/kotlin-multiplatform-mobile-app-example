@@ -42,14 +42,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            if (shouldShowCamera.value) {
+            //if (shouldShowCamera.value) {
                 CameraView(
                     outputDirectory = outputDirectory,
                     executor = cameraExecutor,
                     onImageCaptured = ::handleImageCapture,
                     onError = { Log.e("CAMERA VIEW", "View error:", it) }
                 )
-            }
+            //}
         }
 
         requestCameraPermission()

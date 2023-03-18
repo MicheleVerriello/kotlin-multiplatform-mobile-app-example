@@ -1,13 +1,20 @@
 package com.example.exampleapplication.android
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.hardware.camera2.CaptureRequest
 import android.net.Uri
+import android.os.Handler
+import android.os.HandlerThread
+import android.util.DisplayMetrics
 import android.util.Log
-import androidx.camera.core.CameraSelector
+import android.util.Range
+import android.util.Size
+import androidx.camera.camera2.interop.Camera2Interop
+import androidx.camera.core.*
+import androidx.camera.core.AspectRatio.RATIO_4_3
 import androidx.camera.core.CameraSelector.LENS_FACING_FRONT
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.impl.ImageAnalysisConfig
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.border
@@ -38,6 +45,7 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@SuppressLint("UnsafeOptInUsageError")
 @Composable
 fun CameraView(
     outputDirectory: File,
@@ -45,19 +53,34 @@ fun CameraView(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
-    // 1
     val lensFacing = CameraSelector.DEFAULT_FRONT_CAMERA
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val resolution = Size(1920, 1080)
 
-    val preview = Preview.Builder().build()
     val previewView = remember { PreviewView(context) }
     val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(LENS_FACING_FRONT)
         .build()
 
-    // 2
+    val preview = Preview.Builder()
+        .setTargetResolution(resolution)
+        .build()
+   /* val ext: Camera2Interop.Extender<*> = Camera2Interop.Extender(preview)
+    ext.setCaptureRequestOption(
+        CaptureRequest.CONTROL_AE_MODE,
+        CaptureRequest.CONTROL_AE_MODE_OFF
+    )
+    ext.setCaptureRequestOption(
+        CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
+        Range<Int>(60, 60)
+    )*/
+
+
+
+
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
@@ -71,7 +94,7 @@ fun CameraView(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    // 3
+
     Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
