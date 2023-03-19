@@ -13,7 +13,9 @@ import android.util.Size
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.core.*
 import androidx.camera.core.AspectRatio.RATIO_4_3
+import androidx.camera.core.CameraSelector.LENS_FACING_BACK
 import androidx.camera.core.CameraSelector.LENS_FACING_FRONT
+import androidx.camera.core.CameraSelector.LensFacing
 import androidx.camera.core.impl.ImageAnalysisConfig
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -26,7 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Lens
+import androidx.compose.material.icons.sharp.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -45,7 +47,7 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-@SuppressLint("UnsafeOptInUsageError")
+@SuppressLint("RestrictedApi")
 @Composable
 fun CameraView(
     outputDirectory: File,
@@ -53,32 +55,17 @@ fun CameraView(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
-    val lensFacing = CameraSelector.DEFAULT_FRONT_CAMERA
+    var lensFacing = CameraSelector.DEFAULT_BACK_CAMERA
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val resolution = Size(1920, 1080)
-
-    val previewView = remember { PreviewView(context) }
     val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
-    val cameraSelector = CameraSelector.Builder()
-        .requireLensFacing(LENS_FACING_FRONT)
+    var previewView = remember { PreviewView(context) }
+
+    var cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(LENS_FACING_BACK)
         .build()
 
-    val preview = Preview.Builder()
-        .setTargetResolution(resolution)
-        .build()
-   /* val ext: Camera2Interop.Extender<*> = Camera2Interop.Extender(preview)
-    ext.setCaptureRequestOption(
-        CaptureRequest.CONTROL_AE_MODE,
-        CaptureRequest.CONTROL_AE_MODE_OFF
-    )
-    ext.setCaptureRequestOption(
-        CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
-        Range<Int>(60, 60)
-    )*/
-
-
-
+    var preview = Preview.Builder().build()
 
 
     LaunchedEffect(lensFacing) {
@@ -87,8 +74,7 @@ fun CameraView(
         cameraProvider.bindToLifecycle(
             lifecycleOwner,
             cameraSelector,
-            preview,
-            imageCapture
+            preview
         )
 
         preview.setSurfaceProvider(previewView.surfaceProvider)
@@ -122,6 +108,34 @@ fun CameraView(
                 )
             }
         )
+
+        IconButton(
+            modifier = Modifier
+                .padding(bottom = 20.dp),
+            onClick = {
+                cameraSelector = if(cameraSelector.lensFacing == LENS_FACING_BACK) {
+                    CameraSelector.Builder()
+                        .requireLensFacing(LENS_FACING_FRONT)
+                        .build()
+                } else {
+                    CameraSelector.Builder()
+                        .requireLensFacing(LENS_FACING_BACK)
+                        .build()
+                }
+
+                preview = Preview.Builder().build()
+            },
+            content = {
+                Icon(
+                    imageVector = Icons.Sharp.FlipCameraAndroid,
+                    contentDescription = "Take picture",
+                    tint = Color.Green,
+                    modifier = Modifier
+                        .padding(start = 250.dp)
+                        .size(100.dp)
+                )
+            }
+        )
     }
 }
 
@@ -151,6 +165,10 @@ private fun takePhoto(
             onImageCaptured(savedUri)
         }
     })
+}
+
+private fun flipCamera(lensFacing: CameraSelector) {
+    //lensFacing = CameraSelector.LENS_FACING_BACK
 }
 
 private suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutine { continuation ->

@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
 
 
     private fun handleImageCapture(uri: Uri) {
-        Log.i("kilo", "Image captured: $uri")
         shouldShowCamera.value = false
 
         photoUri = uri
